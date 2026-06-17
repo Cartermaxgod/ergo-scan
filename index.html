@@ -451,8 +451,18 @@ function getYTid(url){
 }
 
 function thumbHTML(v){
-  if(v.thumb){
-    return '<img src="'+v.thumb+'" alt="'+v.title+'" loading="lazy"/>';
+  var ytid = getYTid(v.url);
+  // Use custom thumb → YouTube auto-thumb → styled fallback
+  var src = v.thumb
+    ? v.thumb
+    : ytid
+      ? 'https://img.youtube.com/vi/'+ytid+'/hqdefault.jpg'
+      : null;
+
+  if(src){
+    return '<img src="'+src+'" alt="'+v.title+'" loading="lazy" '
+      +'style="position:absolute;top:0;left:0;width:100%;height:100%;object-fit:cover;" '
+      +'onerror="this.style.display=\'none\'"/>';
   }
   return '<div style="position:absolute;top:0;left:0;right:0;bottom:0;'
     +'background:linear-gradient(135deg,#0c2248,#1a3a6a);'
