@@ -692,24 +692,24 @@ document.getElementById('btn-submit-warranty').addEventListener('click',function
 
     /* If there's an invoice file, upload to Firebase Storage first */
     if(file && firebase.storage){
-      var storageRef = firebase.storage().ref('invoices/'+wid+'-'+file.name);
+      var storageRef = firebase.storage().ref('ergothrone/invoices/'+wid+'-'+file.name);
       var metadata = { contentType: file.type || 'application/octet-stream' };
       storageRef.put(file, metadata).then(function(snap){
         return snap.ref.getDownloadURL();
       }).then(function(downloadURL){
         payload.invoiceURL = downloadURL;
-        return db.collection('warranty_registrations').doc(wid).set(payload);
+        return db.collection('ergothrone/data/warranty_registrations').doc(wid).set(payload);
       }).then(function(){
         showWarrantySuccess(wid);
       }).catch(function(err){
         console.error(err);
         /* Even if storage fails, still save the form data */
-        db.collection('warranty_registrations').doc(wid).set(payload).then(function(){
+        db.collection('ergothrone/data/warranty_registrations').doc(wid).set(payload).then(function(){
           showWarrantySuccess(wid);
         });
       });
     } else {
-      db.collection('warranty_registrations').doc(wid).set(payload).then(function(){
+      db.collection('ergothrone/data/warranty_registrations').doc(wid).set(payload).then(function(){
         showWarrantySuccess(wid);
       }).catch(function(err){
         console.error('Firestore error:',err);
@@ -749,7 +749,7 @@ document.getElementById('btn-home-from-warranty').addEventListener('click',funct
    HOW TO ACTIVATE FIREBASE:
    1. Go to console.firebase.google.com → your project
    2. Firestore: ensure 'support_tickets' collection exists
-   3. Storage: ensure 'ticket-photos/' path is allowed
+   3. Storage: ensure 'ergothrone/ticket-photos/' path is allowed
    4. Paste your config into FIREBASE_CONFIG below (both here
       and in the warranty section — same project)
    5. Set FIREBASE_ENABLED = true
@@ -850,7 +850,7 @@ document.getElementById('btn-submit-ticket').addEventListener('click', function(
     function uploadAllPhotos(fileList){
       if(!fileList.length) return Promise.resolve([]);
       var uploads = fileList.map(function(f, i){
-        var path = 'ticket-photos/' + tid + '/' + i + '_' + f.name;
+        var path = 'ergothrone/ticket-photos/' + tid + '/' + i + '_' + f.name;
         var meta = { contentType: f.type || 'image/jpeg' };
         return st.ref(path).put(f, meta).then(function(snap){
           return snap.ref.getDownloadURL();
@@ -866,11 +866,11 @@ document.getElementById('btn-submit-ticket').addEventListener('click', function(
         payload.photoURLs = urls;
         loadingMsg.textContent = 'Saving ticket details...';
         /* save main ticket record */
-        return db.collection('support_tickets').doc(tid).set(payload);
+        return db.collection('ergothrone/data/support_tickets').doc(tid).set(payload);
       })
       .then(function(){
         /* also save a lightweight confirmation record keyed by email */
-        return db.collection('ticket_confirmations').add({
+        return db.collection('ergothrone/data/ticket_confirmations').add({
           ticketId:    tid,
           email:       email,
           name:        name,
@@ -886,7 +886,7 @@ document.getElementById('btn-submit-ticket').addEventListener('click', function(
         /* graceful fallback — still save without photos if upload fails */
         payload.photoURLs = [];
         payload.uploadError = err.message || 'photo upload failed';
-        db.collection('support_tickets').doc(tid).set(payload)
+        db.collection('ergothrone/data/support_tickets').doc(tid).set(payload)
           .then(function(){ showTicketSuccess(tid); })
           .catch(function(){ showTicketSuccess(tid); }); /* show success regardless */
       });
@@ -994,26 +994,26 @@ document.getElementById('btn-submit-install').addEventListener('click',function(
 
     /* upload invoice first, then write the record */
     if(file && firebase.storage){
-      var storageRef = firebase.storage().ref('installation-invoices/'+iid+'-'+file.name);
+      var storageRef = firebase.storage().ref('ergothrone/installation-invoices/'+iid+'-'+file.name);
       var metadata = { contentType: file.type || 'application/octet-stream' };
       storageRef.put(file, metadata).then(function(snap){
         return snap.ref.getDownloadURL();
       }).then(function(downloadURL){
         payload.invoiceURL = downloadURL;
         loadingMsg.textContent = 'Saving request details...';
-        return db.collection('installation_requests').doc(iid).set(payload);
+        return db.collection('ergothrone/data/installation_requests').doc(iid).set(payload);
       }).then(function(){
         showInstallSuccess(iid);
       }).catch(function(err){
         console.error('Installation submit error:', err);
         /* graceful fallback — still save the record without invoice URL */
         payload.uploadError = err.message || 'invoice upload failed';
-        db.collection('installation_requests').doc(iid).set(payload).then(function(){
+        db.collection('ergothrone/data/installation_requests').doc(iid).set(payload).then(function(){
           showInstallSuccess(iid);
         }).catch(function(){ showInstallSuccess(iid); });
       });
     } else {
-      db.collection('installation_requests').doc(iid).set(payload).then(function(){
+      db.collection('ergothrone/data/installation_requests').doc(iid).set(payload).then(function(){
         showInstallSuccess(iid);
       }).catch(function(err){
         console.error('Firestore error:',err);
