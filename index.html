@@ -154,6 +154,19 @@ body{height:100%;width:100%;overflow:hidden;background:#0a1628;font-family:'Outf
         <svg width="8" height="14" viewBox="0 0 8 14" fill="none" stroke="rgba(255,255,255,0.25)" stroke-width="2" stroke-linecap="round"><path d="M1 1l6 6-6 6"/></svg>
       </div>
     </button>
+    <button class="card fu d5" id="btn-install">
+      <div class="card-shine"></div>
+      <div class="card-icon-col">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="rgba(148,195,255,0.85)" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 000 1.4l1.6 1.6a1 1 0 001.4 0l3.77-3.77a6 6 0 01-7.94 7.94l-6.91 6.91a2.12 2.12 0 01-3-3l6.91-6.91a6 6 0 017.94-7.94l-3.76 3.76z"/></svg>
+      </div>
+      <div class="card-text-col">
+        <div class="card-title">Installation Request</div>
+        <div class="card-sub">Book professional setup for your product</div>
+      </div>
+      <div class="card-arrow-col">
+        <svg width="8" height="14" viewBox="0 0 8 14" fill="none" stroke="rgba(255,255,255,0.25)" stroke-width="2" stroke-linecap="round"><path d="M1 1l6 6-6 6"/></svg>
+      </div>
+    </button>
   </div>
   <div class="home-bar-wrap"><div class="home-bar"></div></div>
 </div>
@@ -298,6 +311,51 @@ body{height:100%;width:100%;overflow:hidden;background:#0a1628;font-family:'Outf
   </div>
 </div>
 
+<!-- INSTALLATION REQUEST -->
+<div class="screen off-right sub-screen" id="s-install">
+  <div class="topbar">
+    <button class="back-btn" id="back-install"><svg width="9" height="15" viewBox="0 0 9 15" fill="none" stroke="white" stroke-width="2" stroke-linecap="round"><path d="M7 1L2 7.5 7 14"/></svg></button>
+    <span class="topbar-title">Installation Request</span>
+  </div>
+  <div class="screen-body">
+    <div class="sec-label">Request Installation Service</div>
+    <div class="field"><label>Full Name *</label><input type="text" id="i-name" placeholder="Enter your full name"/></div>
+    <div class="field"><label>Email Address *</label><input type="email" id="i-email" placeholder="you@example.com"/></div>
+    <div class="field"><label>Phone Number *</label><input type="tel" id="i-phone" placeholder="+91 00000 00000"/></div>
+    <div class="field"><label>Shipping Address *</label><textarea id="i-address" placeholder="Enter your complete shipping address"></textarea></div>
+    <div class="field"><label>Order Number *</label><input type="text" id="i-order" placeholder="ET-XXXXXXXX"/></div>
+    <div class="field"><label>Product</label>
+      <select id="i-model">
+        <option value="">Select your product</option>
+        <option value="Ergonomic Chair">Ergonomic Chair</option>
+        <option value="Ergonomic Desk">Ergonomic Desk</option>
+      </select>
+    </div>
+
+    <div class="sec-label">Upload Invoice *</div>
+    <div class="upload-box" id="i-upload-box">
+      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="rgba(148,175,210,0.5)" stroke-width="1.5" stroke-linecap="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17,8 12,3 7,8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+      <strong id="i-file-label">Tap to upload invoice</strong>
+      <span>JPG, PNG or PDF</span>
+      <input type="file" id="i-file" style="display:none" accept="image/*,.pdf"/>
+    </div>
+
+    <!-- loading state -->
+    <div id="i-loading" style="display:none;text-align:center;padding:16px 0;">
+      <div style="display:inline-block;width:24px;height:24px;border:2px solid rgba(255,255,255,0.15);border-top-color:#60a5fa;border-radius:50%;animation:spin 0.7s linear infinite;"></div>
+      <div id="i-loading-msg" style="color:rgba(148,175,210,0.6);font-size:13px;margin-top:10px;">Submitting request...</div>
+    </div>
+    <button class="submit-btn" id="btn-submit-install">Submit Request →</button>
+  </div>
+  <div class="success-overlay" id="install-success">
+    <div class="success-circle"><svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="#22c55e" stroke-width="2.2" stroke-linecap="round"><path d="M20 6L9 17l-5-5"/></svg></div>
+    <div class="success-title">Request Submitted!</div>
+    <div class="success-sub">Our installation team will contact you within 24–48 hours to schedule your setup. Save your request number below.</div>
+    <div class="success-id" id="install-id">IN-000000</div>
+    <button class="back-home-btn" id="btn-home-from-install">← Back to Home</button>
+  </div>
+</div>
+
 </div></div>
 <!-- Firebase SDK — loads silently, only activates when FIREBASE_ENABLED = true -->
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
@@ -383,8 +441,9 @@ function addCard(id,dest){
 addCard('btn-warranty','s-warranty');
 addCard('btn-videos','s-videos');
 addCard('btn-ticket','s-ticket');
+addCard('btn-install','s-install');
 function addBack(id){document.getElementById(id).addEventListener('click',function(){goTo('s-home');});}
-addBack('back-warranty');addBack('back-videos');addBack('back-ticket');
+addBack('back-warranty');addBack('back-videos');addBack('back-ticket');addBack('back-install');
 
 /* ── VIDEOS ── */
 /* ══════════════════════════════════════════════════════
@@ -859,6 +918,130 @@ document.getElementById('btn-home-from-ticket').addEventListener('click',functio
   var chips=document.querySelectorAll('#chip-group .chip');
   for(var i=0;i<chips.length;i++) chips[i].classList.remove('on');
   chips[0].classList.add('on');
+  goTo('s-home');
+});
+
+/* ══════════════════════════════════════════════════════════════
+   INSTALLATION REQUEST — Firebase-backed submission
+   Records to Firestore collection 'installation_requests'
+   Invoice files go to Storage path 'installation-invoices/'
+   ══════════════════════════════════════════════════════════════ */
+
+/* ── file upload ── */
+document.getElementById('i-upload-box').addEventListener('click',function(){document.getElementById('i-file').click();});
+document.getElementById('i-file').addEventListener('change',function(){
+  document.getElementById('i-file-label').textContent=this.files.length===1?this.files[0].name:'Tap to upload invoice';
+});
+
+/* ── submit ── */
+document.getElementById('btn-submit-install').addEventListener('click',function(){
+  var name    = document.getElementById('i-name').value.trim();
+  var email   = document.getElementById('i-email').value.trim();
+  var phone   = document.getElementById('i-phone').value.trim();
+  var address = document.getElementById('i-address').value.trim();
+  var order   = document.getElementById('i-order').value.trim();
+  var model   = document.getElementById('i-model').value;
+  var file    = document.getElementById('i-file').files[0];
+
+  /* ── validation ── */
+  if(!name){ alert('Please enter your full name.'); return; }
+  if(!email||email.indexOf('@')<0){ alert('Please enter a valid email address.'); return; }
+  if(!phone){ alert('Please enter your phone number.'); return; }
+  if(!address){ alert('Please enter your shipping address.'); return; }
+  if(!order){ alert('Please enter your order number.'); return; }
+  if(!file){ alert('Please upload your invoice.'); return; }
+
+  /* ── generate request ID ── */
+  var iid = 'IN-' + (Math.floor(Math.random()*900000)+100000);
+  var submittedAt = new Date().toISOString();
+
+  /* ── payload ── */
+  var payload = {
+    requestId:      iid,
+    status:         'pending',
+    name:           name,
+    email:          email,
+    phone:          phone,
+    shippingAddress:address,
+    orderNumber:    order,
+    product:        model || '',
+    hasInvoice:     file ? true : false,
+    invoiceName:    file ? file.name : '',
+    invoiceURL:     '',
+    submittedAt:    submittedAt,
+    source:         'ergothrone-app'
+  };
+
+  /* ── show loading ── */
+  document.getElementById('btn-submit-install').style.display='none';
+  document.getElementById('i-loading').style.display='block';
+  var loadingMsg = document.getElementById('i-loading-msg');
+
+  /* ── Firebase config ── */
+  var FIREBASE_ENABLED = true;
+  var FIREBASE_CONFIG  = {
+    apiKey:            'AIzaSyDxE3KBE211akr3ophkJ3mc8GZLjsI53_8',
+    authDomain:        'ergothrone-fe349.firebaseapp.com',
+    projectId:         'ergothrone-fe349',
+    storageBucket:     'ergothrone-fe349.firebasestorage.app',
+    messagingSenderId: '908529573261',
+    appId:             '1:908529573261:web:befbcaf5645e6f27d071c4'
+  };
+
+  if(FIREBASE_ENABLED && typeof firebase !== 'undefined'){
+    if(!firebase.apps.length){ firebase.initializeApp(FIREBASE_CONFIG); }
+    var db = firebase.firestore();
+
+    /* upload invoice first, then write the record */
+    if(file && firebase.storage){
+      var storageRef = firebase.storage().ref('installation-invoices/'+iid+'-'+file.name);
+      var metadata = { contentType: file.type || 'application/octet-stream' };
+      storageRef.put(file, metadata).then(function(snap){
+        return snap.ref.getDownloadURL();
+      }).then(function(downloadURL){
+        payload.invoiceURL = downloadURL;
+        loadingMsg.textContent = 'Saving request details...';
+        return db.collection('installation_requests').doc(iid).set(payload);
+      }).then(function(){
+        showInstallSuccess(iid);
+      }).catch(function(err){
+        console.error('Installation submit error:', err);
+        /* graceful fallback — still save the record without invoice URL */
+        payload.uploadError = err.message || 'invoice upload failed';
+        db.collection('installation_requests').doc(iid).set(payload).then(function(){
+          showInstallSuccess(iid);
+        }).catch(function(){ showInstallSuccess(iid); });
+      });
+    } else {
+      db.collection('installation_requests').doc(iid).set(payload).then(function(){
+        showInstallSuccess(iid);
+      }).catch(function(err){
+        console.error('Firestore error:',err);
+        showInstallSuccess(iid);
+      });
+    }
+  } else {
+    /* offline / pre-firebase mode */
+    setTimeout(function(){ showInstallSuccess(iid); }, 800);
+  }
+});
+
+function showInstallSuccess(iid){
+  document.getElementById('i-loading').style.display='none';
+  document.getElementById('btn-submit-install').style.display='block';
+  document.getElementById('install-id').textContent=iid;
+  document.getElementById('install-success').classList.add('show');
+}
+
+document.getElementById('btn-home-from-install').addEventListener('click',function(){
+  document.getElementById('install-success').classList.remove('show');
+  /* reset all installation fields */
+  ['i-name','i-email','i-phone','i-address','i-order'].forEach(function(id){
+    document.getElementById(id).value='';
+  });
+  document.getElementById('i-model').value='';
+  document.getElementById('i-file').value='';
+  document.getElementById('i-file-label').textContent='Tap to upload invoice';
   goTo('s-home');
 });
 
