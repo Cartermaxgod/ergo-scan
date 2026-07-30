@@ -190,6 +190,34 @@ body{height:100%;width:100%;overflow:hidden;background:#0a1628;font-family:'Outf
         <option value="Ergonomic Desk">Ergonomic Desk</option>
       </select>
     </div>
+    <!-- Cascading: Model (depends on Chair/Desk) -->
+    <div class="field" id="w-model-field" style="display:none;"><label>Model</label>
+      <select id="w-product-model">
+        <option value="">Select model</option>
+      </select>
+    </div>
+    <!-- Cascading: Size (Desk only) -->
+    <div class="field" id="w-size-field" style="display:none;"><label>Size</label>
+      <select id="w-size">
+        <option value="">Select size</option>
+        <option value="100cm">100cm</option>
+        <option value="120cm">120cm</option>
+        <option value="140cm">140cm</option>
+      </select>
+    </div>
+    <!-- Cascading: Color (Desk only) -->
+    <div class="field" id="w-color-field" style="display:none;"><label>Color</label>
+      <select id="w-color">
+        <option value="">Select color</option>
+        <option value="Grenade Pine">Grenade Pine</option>
+        <option value="White Oak">White Oak</option>
+        <option value="Matt Black">Matt Black</option>
+        <option value="Baverian Beach">Baverian Beach</option>
+        <option value="Claire Oak">Claire Oak</option>
+        <option value="Maple Fusion">Maple Fusion</option>
+        <option value="White">White</option>
+      </select>
+    </div>
     <div class="field"><label>Order Number</label><input type="text" id="w-order" placeholder="e.g. ET-123456789"/></div>
     <div class="field"><label>Date of Purchase</label><input type="date" id="w-date" style="color-scheme:dark;color:#fff;"/></div>
     <div class="field"><label>Where did you buy it?</label>
@@ -624,12 +652,82 @@ document.getElementById('w-file').addEventListener('change',function(){
   document.getElementById('w-file-label').textContent=this.files.length===1?this.files[0].name:this.files.length+' files selected';
 });
 
+/* ── Cascading Model / Size / Color dropdowns ── */
+(function(){
+  var CHAIR_MODELS = ['ET Aeronaut','ET UrbanNova','ET Kinetix','ET Optimus Pro','ET Spiraflex'];
+  var DESK_MODELS  = ['ET V One'];
+
+  var productSel = document.getElementById('w-model');          /* Chair / Desk */
+  var modelField = document.getElementById('w-model-field');
+  var modelSel   = document.getElementById('w-product-model');  /* specific model */
+  var sizeField  = document.getElementById('w-size-field');
+  var sizeSel    = document.getElementById('w-size');
+  var colorField = document.getElementById('w-color-field');
+  var colorSel   = document.getElementById('w-color');
+
+  function fillModels(list){
+    modelSel.innerHTML = '<option value="">Select model</option>';
+    list.forEach(function(m){
+      var o = document.createElement('option');
+      o.value = m; o.textContent = m;
+      modelSel.appendChild(o);
+    });
+  }
+  function hideSizeColor(){
+    sizeField.style.display  = 'none'; sizeSel.value  = '';
+    colorField.style.display = 'none'; colorSel.value = '';
+  }
+
+  /* Product chosen → show relevant models */
+  productSel.addEventListener('change', function(){
+    var v = productSel.value;
+    modelSel.value = '';
+    hideSizeColor();
+    if(v === 'Ergonomic Chair'){
+      fillModels(CHAIR_MODELS);
+      modelField.style.display = 'block';
+    } else if(v === 'Ergonomic Desk'){
+      fillModels(DESK_MODELS);
+      modelField.style.display = 'block';
+    } else {
+      modelField.style.display = 'none';
+    }
+  });
+
+  /* Desk model chosen → open Size */
+  modelSel.addEventListener('change', function(){
+    if(productSel.value === 'Ergonomic Desk' && modelSel.value){
+      sizeField.style.display = 'block';
+    } else {
+      hideSizeColor();
+    }
+  });
+
+  /* Size chosen → open Color */
+  sizeSel.addEventListener('change', function(){
+    if(productSel.value === 'Ergonomic Desk' && sizeSel.value){
+      colorField.style.display = 'block';
+    } else {
+      colorField.style.display = 'none'; colorSel.value = '';
+    }
+  });
+
+  /* expose reset for the "Back to Home" handler */
+  window.resetWarrantyCascade = function(){
+    modelField.style.display = 'none'; modelSel.value = '';
+    hideSizeColor();
+  };
+})();
+
 /* ── SUBMIT WARRANTY — Firebase backend ── */
 document.getElementById('btn-submit-warranty').addEventListener('click',function(){
   var name   = document.getElementById('w-name').value.trim();
   var email  = document.getElementById('w-email').value.trim();
   var phone  = document.getElementById('w-phone').value.trim();
   var model  = document.getElementById('w-model').value;
+  var productModel = document.getElementById('w-product-model').value;
+  var size   = document.getElementById('w-size').value;
+  var color  = document.getElementById('w-color').value;
   var order  = document.getElementById('w-order').value.trim();
   var date   = document.getElementById('w-date').value;
   var store  = document.getElementById('w-store').value;
@@ -637,6 +735,16 @@ document.getElementById('btn-submit-warranty').addEventListener('click',function
 
   if(!name||!email||!model||!order){
     alert('Please fill in: Name, Email, Product and Order Number.');
+    return;
+  }
+
+  if(!productModel){
+    alert('Please select your product model.');
+    return;
+  }
+
+  if(model==='Ergonomic Desk' && (!size||!color)){
+    alert('Please select the size and color for your desk.');
     return;
   }
 
@@ -659,6 +767,9 @@ document.getElementById('btn-submit-warranty').addEventListener('click',function
     email:        email,
     phone:        phone,
     product:      model,
+    productModel: productModel,
+    size:         size,
+    color:        color,
     orderNumber:  order,
     purchaseDate: date,
     purchasedFrom:store,
@@ -736,6 +847,7 @@ document.getElementById('btn-home-from-warranty').addEventListener('click',funct
     document.getElementById(id).value='';
   });
   document.getElementById('w-model').value='';
+  if(window.resetWarrantyCascade) window.resetWarrantyCascade();
   document.getElementById('w-store').value='';
   document.getElementById('w-file').value='';
   document.getElementById('w-file-label').textContent='Tap to upload invoice';
