@@ -457,7 +457,7 @@ function visibleRecords(){
     var d=r.data;
     if(st && (d.status||'')!==st)return false;
     if(!q)return true;
-    var hay=[d[cfg.idField],d.name,d.email,d.phone,d.orderNumber,d.product,d.issueType]
+    var hay=[d[cfg.idField],d.name,d.email,d.phone,d.orderNumber,d.product,d.productModel,d.issueType]
       .map(function(x){return String(x==null?'':x).toLowerCase();}).join(' ');
     return hay.indexOf(q)>=0;
   });
@@ -479,7 +479,7 @@ function render(){
     div.className='rec';
     var sub=(current==='ticket')
       ? esc(d.issueType||'—')+' · '+esc(d.email||'—')
-      : esc(d.product||'—')+' · '+esc(d.email||'—');
+      : esc(d.product||'—')+(d.productModel?' ('+esc(d.productModel)+')':'')+' · '+esc(d.email||'—');
     div.innerHTML=
       '<div class="rec-top">'+
         '<span class="rec-id">'+esc(d[cfg.idField]||r.docId)+'</span>'+
@@ -613,4 +613,5 @@ document.getElementById('btn-csv').addEventListener('click',function(){
 </script>
 </body>
 </html>
+
 
