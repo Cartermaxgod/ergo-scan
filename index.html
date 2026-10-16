@@ -188,6 +188,7 @@ body{height:100%;width:100%;overflow:hidden;background:#0a1628;font-family:'Outf
         <option value="">Select your product</option>
         <option value="Ergonomic Chair">Ergonomic Chair</option>
         <option value="Ergonomic Desk">Ergonomic Desk</option>
+        <option value="Gaming Chair">Gaming Chair</option>
       </select>
     </div>
     <!-- Cascading: Model (depends on Chair/Desk) -->
@@ -656,6 +657,7 @@ document.getElementById('w-file').addEventListener('change',function(){
 (function(){
   var CHAIR_MODELS = ['ET Aeronaut','ET UrbanNova','ET Kinetix','ET Rocknova','ET Optimus Pro','ET Spiraflex'];
   var DESK_MODELS  = ['ET V One'];
+  var GAMING_MODELS = ['Arenax Arctic Teal','Arenax Ash Grey','Arenax Desert Gold','Arenax Midnight Navy','Arenax Stealth White','Arenax Steel Blue','Arenax Storm Grey'];
 
   var productSel = document.getElementById('w-model');          /* Chair / Desk */
   var modelField = document.getElementById('w-model-field');
@@ -688,6 +690,9 @@ document.getElementById('w-file').addEventListener('change',function(){
       modelField.style.display = 'block';
     } else if(v === 'Ergonomic Desk'){
       fillModels(DESK_MODELS);
+      modelField.style.display = 'block';
+    } else if(v === 'Gaming Chair'){
+      fillModels(GAMING_MODELS);
       modelField.style.display = 'block';
     } else {
       modelField.style.display = 'none';
